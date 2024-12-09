@@ -1,13 +1,10 @@
 package view;
 import DAO.*;
 import Model.Employee;
-
-import javax.print.DocFlavor;
-import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
 
 public class Vue extends JFrame {
 
@@ -40,7 +37,7 @@ public class Vue extends JFrame {
         this.employeeList =employeeList   ;
     } ;
     public Vue() {
-        setTitle("App");
+        setTitle("Gestion des employes");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         EmployeeDAOImpl eImp = new EmployeeDAOImpl();
@@ -169,8 +166,8 @@ public class Vue extends JFrame {
         tel.setText("");
         email.setText("");
         sal.setText("");
-        roleComboBox.setSelectedIndex(0); // Reset to the first item in the dropdown
-        postesComboBox.setSelectedIndex(0); // Reset to the first item in the dropdown
+        roleComboBox.setSelectedIndex(0); 
+        postesComboBox.setSelectedIndex(0); 
     }
     
 }

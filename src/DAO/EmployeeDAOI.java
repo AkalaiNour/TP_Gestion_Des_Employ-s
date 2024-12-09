@@ -1,7 +1,5 @@
 package DAO;
 import Model.Employee ;
-
-import javax.management.relation.Role;
 import java.util.List;
 
 public interface EmployeeDAOI {

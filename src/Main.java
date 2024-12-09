@@ -1,15 +1,13 @@
-import Controller.EmployeeController;
-import DAO.EmployeeDAOImpl;
-import Model.EmployeeModel;
-import view.Vue;
+import Controller.LoginController;
+import DAO.SignUpViewDAOImpl;
+import view.LoginView;
 
 public class Main {
     public static void main(String[] args) {
-        EmployeeDAOImpl dao = new EmployeeDAOImpl();
-        EmployeeModel model = new EmployeeModel(dao);
-        Vue view = new Vue();
+        // Create instances of DAO and View
+        SignUpViewDAOImpl dao = new SignUpViewDAOImpl(); 
+        LoginView loginView = new LoginView(); 
 
-        // Pass the model and view to the controller
-        new EmployeeController(model, view);
+        new LoginController(loginView, dao);
     }
 }

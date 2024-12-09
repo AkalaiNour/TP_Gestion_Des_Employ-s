@@ -6,6 +6,41 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Vue",
+            "request": "launch",
+            "mainClass": "view.Vue",
+            "projectName": "src1_6e035759"
+        },
+        {
+            "type": "java",
+            "name": "SignUpController",
+            "request": "launch",
+            "mainClass": "Controller.SignUpController",
+            "projectName": "src1_6e035759"
+        },
+        {
+            "type": "java",
+            "name": "SignUpView",
+            "request": "launch",
+            "mainClass": "view.SignUpView",
+            "projectName": "src1_6e035759"
+        },
+        {
+            "type": "java",
+            "name": "LoginView",
+            "request": "launch",
+            "mainClass": "view.LoginView",
+            "projectName": "src1_6e035759"
+        },
+        {
+            "type": "java",
+            "name": "Login",
+            "request": "launch",
+            "mainClass": "view.Login",
+            "projectName": "src1_6e035759"
+        },
+        {
+            "type": "java",
             "name": "nour",
             "request": "launch",
             "mainClass": "Vue.nour",
