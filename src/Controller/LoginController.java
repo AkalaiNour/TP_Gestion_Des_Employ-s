@@ -1,11 +1,11 @@
 package Controller;
-
 import DAO.EmployeeDAOImpl;
 import DAO.SignUpViewDAOImpl;
 import Model.EmployeeModel;
 import Model.SignUpModel;
 import javax.swing.*;
 import view.LoginView;
+import view.SignUpView;
 import view.Vue;
 
 public class LoginController {
@@ -51,8 +51,16 @@ public class LoginController {
     }
 
     private void handleCreateAccount() {
-        // Logic to redirect to the SignUp view
-        JOptionPane.showMessageDialog(view, "Redirecting to Sign Up...");
-        // Implement the SignUpView or open a new window for user registration
-    }
+    // Dispose of the current login view
+    view.dispose();
+
+    // Initialize and show the SignUpView
+    SignUpView signUpView = new SignUpView();
+
+    // Initialize SignUpController to handle logic for the SignUpView
+    new SignUpController(signUpView); // Pass the SignUpView and DAO to the controller
+
+    // Set the SignUpView visible
+    signUpView.setVisible(true);
+}
 }

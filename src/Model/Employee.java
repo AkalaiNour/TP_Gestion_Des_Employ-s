@@ -99,8 +99,10 @@ public class Employee {
     @Override
     public String toString() {
         return String.format(
-                "| %-5s | %-15s | %-15s | %-15s | %-25s | %-10s | %-20s | %-10s |",
-                id, nom, prenom, tel, email, salaire, poste, role
+            "| %-5s | %-15s | %-15s | %-15s | %-25s | %-10.2f | %-15s | %-10s |",
+            id, nom, prenom, tel, email, salaire, poste, role
         );
     }
+
+
 }

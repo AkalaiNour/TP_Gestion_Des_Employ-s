@@ -2,6 +2,7 @@ package Controller;
 
 import Model.SignUpModel;
 import DAO.SignUpViewDAOImpl;
+import view.LoginView;
 import view.SignUpView;
 
 import javax.swing.*;
@@ -27,35 +28,40 @@ public class SignUpController {
     }
 
     private void handleSignUp() {
-        // Retrieve user input from the view
-        String firstName = signUpView.getFirstNameField().getText().trim();
-        String lastName = signUpView.getLastNameField().getText().trim();
-        String username = signUpView.getUsernameField().getText().trim();
-        String email = signUpView.getEmailField().getText().trim();
-        String password = new String(signUpView.getPasswordField().getPassword());
-        String confirmPassword = new String(signUpView.getConfirmPasswordField().getPassword());
-        String role = signUpView.getRoleComboBox().getSelectedItem().toString();
+    // Retrieve user input from the view
+    String firstName = signUpView.getFirstNameField().getText().trim();
+    String lastName = signUpView.getLastNameField().getText().trim();
+    String username = signUpView.getUsernameField().getText().trim();
+    String email = signUpView.getEmailField().getText().trim();
+    String password = new String(signUpView.getPasswordField().getPassword());
+    String confirmPassword = new String(signUpView.getConfirmPasswordField().getPassword());
+    String role = signUpView.getRoleComboBox().getSelectedItem().toString();
 
-        // Create a SignUpModel instance with the provided data
-        SignUpModel newUser = new SignUpModel(0, firstName, lastName, username, email, password, confirmPassword, role);
+    // Create a SignUpModel instance with the provided data
+    SignUpModel newUser = new SignUpModel(0, firstName, lastName, username, email, password, confirmPassword, role);
 
-        // Validate the user input
-        if (!newUser.validateSignUp()) {
-            JOptionPane.showMessageDialog(signUpView, "Invalid input! Please check your details.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Save the new user to the database
-        try {
-            signUpDAO.addUser(newUser);
-            JOptionPane.showMessageDialog(signUpView, "Account created successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-
-            // Clear fields after successful sign-up
-            clearFields();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(signUpView, "Error while creating account: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
+    // Validate the user input
+    if (!newUser.validateSignUp()) {
+        JOptionPane.showMessageDialog(signUpView, "Invalid input! Please check your details.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
     }
+
+    // Save the new user to the database
+    try {
+        signUpDAO.addUser(newUser);
+        JOptionPane.showMessageDialog(signUpView, "Account created successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+        // Redirect to LoginView
+        signUpView.dispose(); // Close the current SignUpView
+        LoginView loginView = new LoginView();
+        new LoginController(loginView, signUpDAO); // Pass DAO to the LoginController
+        loginView.setVisible(true);
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(signUpView, "Error while creating account: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
 
     private void clearFields() {
         signUpView.getFirstNameField().setText("");

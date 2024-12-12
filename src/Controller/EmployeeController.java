@@ -2,11 +2,10 @@ package Controller;
 
 import Model.Employee;
 import Model.EmployeeModel;
-
-import java.util.ArrayList;
+import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.*;
-
+import javax.swing.table.DefaultTableModel;
 import view.Vue;
 
 public class EmployeeController {
@@ -36,7 +35,7 @@ public class EmployeeController {
                 );
                 model.addEmployee(emp);
                 JOptionPane.showMessageDialog(view, "Employee added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-        
+
                 view.clearInputFields(); // Clear the input fields
                 view.getAfficher().doClick(); // Refresh the employee list
             } catch (NumberFormatException ex) {
@@ -45,67 +44,64 @@ public class EmployeeController {
                 JOptionPane.showMessageDialog(view, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
-        
-        
 
-        // Afficher (Display) button listener
-        view.getAfficher().addActionListener(e -> {
+        // Display (Afficher) button listener
+        view.getAfficher().addActionListener((ActionEvent e) -> {
+            // Get all employees from the model
             List<Employee> allEmployees = model.getAllEmployees();
-            List<String> employeeStrings = new ArrayList<>();
-            employeeStrings.add(String.format(
-                    "| %-5s | %-15s | %-15s | %-15s | %-25s | %-10s | %-20s | %-10s |",
-                    "ID", "Nom", "Prenom", "Tel", "Email", "Salaire", "Poste", "Role"
-            ));
+
+            // Define column names
+            String[] columnNames = {"ID", "Nom", "Prenom", "Tel", "Email", "Salaire", "Poste", "Role"};
+
+            // Populate rows with employee data
+            DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
             for (Employee emp : allEmployees) {
-                employeeStrings.add(emp.toString());
+                tableModel.addRow(new Object[]{
+                        emp.getId(),
+                        emp.getNom(),
+                        emp.getPrenom(),
+                        emp.getTel(),
+                        emp.getEmail(),
+                        emp.getSalaire(),
+                        emp.getPoste(),
+                        emp.getRole()
+                });
             }
-            String[] employeeArray = employeeStrings.toArray(new String[0]);
-        
-            // Replace the JList
-            JList<String> updatedList = new JList<>(employeeArray);
-            updatedList.addListSelectionListener(view.getEmployeeList().getListSelectionListeners()[0]); // Re-add listener
-        
-            view.setEmployeeList(updatedList);
-            JPanel p3 = view.getP3();
-            p3.removeAll();
-            p3.add(new JScrollPane(updatedList));
-            p3.revalidate();
-            p3.repaint();
+
+            // Update table in the view
+            JTable table = view.getEmployeeTable();
+            table.setModel(tableModel);
         });
-        
 
         // Delete (Supprimer) button listener
         view.getSupprimer().addActionListener(e -> {
-            String selectedEmployeeString = view.getEmployeeList().getSelectedValue();
-            if (selectedEmployeeString == null) {
+            JTable table = view.getEmployeeTable();
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow == -1) {
                 JOptionPane.showMessageDialog(view, "No employee selected!", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            try {
-                int id = EmployeeModel.parseEmployeeId(selectedEmployeeString);
-                int confirm = JOptionPane.showConfirmDialog(view, "Are you sure you want to delete this employee?", "Confirm", JOptionPane.YES_NO_OPTION);
-                if (confirm == JOptionPane.YES_OPTION) {
-                    model.deleteEmployee(id);
-                    JOptionPane.showMessageDialog(view, "Employee deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                    view.clearInputFields(); // Clear the input fields
-                    view.getAfficher().doClick();
-                }
-            } catch (IllegalArgumentException ex) {
-                JOptionPane.showMessageDialog(view, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            int id = (int) table.getValueAt(selectedRow, 0);
+            int confirm = JOptionPane.showConfirmDialog(view, "Are you sure you want to delete this employee?", "Confirm", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                model.deleteEmployee(id);
+                JOptionPane.showMessageDialog(view, "Employee deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                view.getAfficher().doClick(); // Refresh the employee list
             }
         });
 
         // Update (Modifier) button listener
         view.getModifier().addActionListener(e -> {
-            String selectedEmployeeString = view.getEmployeeList().getSelectedValue();
-            if (selectedEmployeeString == null) {
+            JTable table = view.getEmployeeTable();
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow == -1) {
                 JOptionPane.showMessageDialog(view, "No employee selected!", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-        
+
             try {
-                int id = EmployeeModel.parseEmployeeId(selectedEmployeeString);
+                int id = (int) table.getValueAt(selectedRow, 0);
                 Employee emp = new Employee(
                         id,
                         view.getNom().getText(),
@@ -118,7 +114,7 @@ public class EmployeeController {
                 );
                 model.updateEmployee(emp, id);
                 JOptionPane.showMessageDialog(view, "Employee updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-        
+
                 view.clearInputFields(); // Clear the input fields
                 view.getAfficher().doClick(); // Refresh the employee list
             } catch (NumberFormatException ex) {
@@ -127,39 +123,24 @@ public class EmployeeController {
                 JOptionPane.showMessageDialog(view, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
-        
 
-        // Employee list selection listener to populate fields with selected employee data
-        view.getEmployeeList().addListSelectionListener(e -> {
+        // Table selection listener to populate fields with selected employee data
+        view.getEmployeeTable().getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                String selectedEmployeeString = view.getEmployeeList().getSelectedValue();
-                if (selectedEmployeeString == null || selectedEmployeeString.trim().isEmpty()) {
+                JTable table = view.getEmployeeTable();
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow == -1) {
                     return;
                 }
-        
-                try {
-                    int id = EmployeeModel.parseEmployeeId(selectedEmployeeString);
-                    Employee selectedEmployee = model.getAllEmployees()
-                            .stream()
-                            .filter(emp -> emp.getId() == id)
-                            .findFirst()
-                            .orElse(null);
-        
-                    if (selectedEmployee != null) {
-                        // Populate the fields with employee details
-                        view.getNom().setText(selectedEmployee.getNom());
-                        view.getPrenom().setText(selectedEmployee.getPrenom());
-                        view.getTel().setText(selectedEmployee.getTel());
-                        view.getEmail().setText(selectedEmployee.getEmail());
-                        view.getSal().setText(String.valueOf(selectedEmployee.getSalaire()));
-                        view.getRoleComboBox().setSelectedItem(selectedEmployee.getRole().name());
-                        view.getPostesComboBox().setSelectedItem(selectedEmployee.getPoste().name());
-                    }
-                } catch (IllegalArgumentException ex) {
-                    JOptionPane.showMessageDialog(view, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                }
+
+                view.getNom().setText((String) table.getValueAt(selectedRow, 1));
+                view.getPrenom().setText((String) table.getValueAt(selectedRow, 2));
+                view.getTel().setText((String) table.getValueAt(selectedRow, 3));
+                view.getEmail().setText((String) table.getValueAt(selectedRow, 4));
+                view.getSal().setText(String.valueOf(table.getValueAt(selectedRow, 5)));
+                view.getRoleComboBox().setSelectedItem(table.getValueAt(selectedRow, 7).toString());
+                view.getPostesComboBox().setSelectedItem(table.getValueAt(selectedRow, 6).toString());
             }
         });
-        
     }
 }
